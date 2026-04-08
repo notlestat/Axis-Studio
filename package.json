@@ -1,0 +1,20 @@
+{
+  "name": "axis-studio",
+  "version": "1.0.0",
+  "description": "Axis Studio backend automation: lead capture, AI replies, follow-ups, bookings, and CRM.",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.1",
+    "airtable": "^0.12.2",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "googleapis": "^144.0.0",
+    "node-cron": "^3.0.3",
+    "resend": "^4.0.1"
+  }
+}
