@@ -11,13 +11,14 @@
 import express from 'express';
 import { generateAutoReply } from '../services/ai.js';
 import { sendAutoReply } from '../services/email.js';
-import { createLead, updateStatus } from '../services/crm.js';
+import { createLead } from '../services/crm.js';
+import { getClient } from '../services/clients.js';
 
 const router = express.Router();
 
 router.post('/', async (req, res) => {
   try {
-    const { name, email, phone, business, message, serviceInterest } = req.body || {};
+    const { name, email, phone, business, message, serviceInterest, clientId } = req.body || {};
 
     // Minimal validation — reject obviously incomplete submissions.
     if (!name || !email || !serviceInterest) {
@@ -25,6 +26,8 @@ router.post('/', async (req, res) => {
         error: 'Missing required fields: name, email, serviceInterest',
       });
     }
+
+    const client = clientId ? getClient(clientId) : null;
 
     // 1. Generate the AI reply.
     const replyText = await generateAutoReply({ name, business, message, serviceInterest });
@@ -41,10 +44,8 @@ router.post('/', async (req, res) => {
       message,
       serviceInterest,
       source: 'Landing page',
+      clientName: client ? client.name : null,
     });
-
-    // 4. Email is out — flip to Contacted.
-    await updateStatus(lead.id, 'Contacted');
 
     return res.status(200).json({ ok: true, leadId: lead.id });
   } catch (err) {

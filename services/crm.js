@@ -33,23 +33,22 @@ export async function createLead({
   message,
   serviceInterest,
   source = 'Landing page',
+  clientName = null,
 }) {
-  const [record] = await table.create([
-    {
-      fields: {
-        Name: name,
-        Email: email,
-        Phone: phone,
-        Business: business,
-        Source: source,
-        'Service interest': serviceInterest,
-        Status: 'New',
-        'Last contacted': today(),
-        'Follow-up count': 0,
-        Notes: message || '',
-      },
-    },
-  ]);
+  const fields = {
+    Name: name,
+    Email: email,
+    Phone: phone,
+    Business: business,
+    'Service Interest': serviceInterest,
+    'Last Contacted': today(),
+    'Follow-up Count': 0,
+    Notes: message || '',
+  };
+
+  if (clientName) fields.Client = clientName;
+
+  const [record] = await table.create([{ fields }]);
   return record;
 }
 
@@ -84,8 +83,8 @@ export async function incrementFollowUp(recordId, currentCount = 0) {
     {
       id: recordId,
       fields: {
-        'Follow-up count': currentCount + 1,
-        'Last contacted': today(),
+        'Follow-up Count': currentCount + 1,
+        'Last Contacted': today(),
       },
     },
   ]);
